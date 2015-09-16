@@ -180,7 +180,7 @@ extends Modelica.Icons.ExamplesPackage;
       DfG_25degC_1bar=0,
       References={"http://www.vias.org/genchem/standard_enthalpies_table.html"})
       "H+(aq)";
-               // as hypothetical HA <-> H+ + A- simplification of H2O + HA <-> H3O+ + A-";
+    // as hypothetical HA <-> H+ + A- simplification of H2O + HA <-> H3O+ + A-'';
 
     constant Chemical.Interfaces.Incompressible.SubstanceData Bicarbonate_aqueous(
       MolarWeight=0.06102,

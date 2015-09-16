@@ -3742,6 +3742,17 @@ extends Modelica.Icons.ExamplesPackage;
 
       constant Modelica.SIunits.Volume OneLiter = 0.001;
 
+	  // Parameters with annotations
+	  parameter Real initialH_exp = 7.2 "Initial pH level @{.sweep1|pH}";
+	  parameter Modelica.SIunits.Pressure p_CO2 "CO2 Partial Pressure @{.sweep2|CO2 Partial Pressure}";
+      parameter Modelica.SIunits.Temperature T_start=310.15 "Initial temperature of the solution @{conditions|Initial Temperature}";
+
+	  // Outputs with annotations
+	  output Modelica.SIunits.Pressure O2_p = oxygen_in_air.p "Current partial pressure @{report|Oxygen Partial Pressure}";
+	  output Real sO2 "Hemoglobin oxygen saturation @{report|Oxygen Saturation of Hemoglobin}";
+	  output Real sCO2 "Hemoglobin carbon dioxide saturation @{report|CO2 Saturation of Hemoglobin}";
+	  output Real dH "Hemoglobin charge change caused by binding of Bohr's protons @{report|Change in Charge}";
+
       parameter Real L_old=7.0529*10^6
         "=[T0]/[R0] .. dissociation constant of relaxed <-> tensed change of deoxyhemoglobin tetramer";
       parameter Real c=0.00431555
@@ -3761,11 +3772,11 @@ extends Modelica.Icons.ExamplesPackage;
       parameter Modelica.SIunits.ChemicalPotential DfG_tT = 0;
       parameter Modelica.SIunits.ChemicalPotential DfG_tR = DfG_tT + RT * log(L);
 
-      parameter Real KC = 1e-3 "Slow down factor";
+      parameter Real KC = 1e-3 "Slow down factor @{Factors|Slow Down Factor}";
 
       parameter Modelica.SIunits.MoleFraction initialO2=1.9594e-07
         "Initial O2 at 37degC, pO2=100Pa";             //at 25degC: 2.342e-8;
-      parameter Modelica.SIunits.MoleFraction initialH=10^(-7.2);
+      parameter Modelica.SIunits.MoleFraction initialH=10^(-initialH_exp);
       parameter Modelica.SIunits.MoleFraction initialCO2=2.4217e-10
         "Initial CO2 at 37degC, pCO2=40mmHg";          //at 25degC: 3.267e-5;
 
@@ -3785,7 +3796,7 @@ extends Modelica.Icons.ExamplesPackage;
         (((KTz37*((10^(-7.2))^2 + KRz37*(10^(-7.2)) + KRz37*KRc37*(2.4217e-5)))/(KRz37*((10^(-7.2))^2 + KTz37*(10^(-7.2)) + KTz37*KTc37*(2.4217e-5))))^4)
         "=[T0]/[R0] .. dissociation constant of relaxed <-> tensed change of deoxyhemoglobin tetramer";
 
-      Chemical.Components.Solution solution(temperature_start=310.15)
+      Chemical.Components.Solution solution(temperature_start=T_start)
         annotation (Placement(transformation(extent={{-100,-56},{100,32}})));
 
       Chemical.Components.Reaction quaternaryForm(KC=KC)
@@ -3854,7 +3865,7 @@ extends Modelica.Icons.ExamplesPackage;
             DfH_25degC=-412900))
         annotation (Placement(transformation(extent={{76,-8},{56,12}})));
       Chemical.Sources.ExternalIdealGasSubstance CO2_gas(substanceData=Chemical.Examples.Substances.CarbonDioxide_gas,
-        PartialPressure(displayUnit="kPa") = 5330,
+        PartialPressure(displayUnit="kPa") = p_CO2,
         Temperature=310.15)                                   annotation (Placement(
             transformation(
             extent={{-10,-10},{10,10}},
@@ -3864,9 +3875,6 @@ extends Modelica.Icons.ExamplesPackage;
             false, KC=KC) annotation (Placement(transformation(extent={{-10,-10},
                 {10,10}}, origin={48,32})));
 
-      Real sO2 "Hemoglobin oxygen saturation";
-      Real sCO2 "Hemoglobin carbon dioxide saturation";
-      Real dH "Hemoglobin charge change caused by binding of Bohr's protons";
     equation
       sO2 = (sum(relaxed.OxyHm.x) + sum(tensed.OxyHm.x)) /
       (sum(relaxed.DeoxyHm.x) + sum(tensed.DeoxyHm.x) + sum(relaxed.OxyHm.x) + sum(tensed.OxyHm.x));
